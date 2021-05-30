@@ -1,0 +1,10 @@
+*.user
+.DS_Store
+.idea/
+.vscode/
+bin/
+dist/
+logs/
+node_modules/
+obj/
+Thumbs.db
