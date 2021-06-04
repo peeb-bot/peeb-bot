@@ -52,6 +52,12 @@ Test
 % dotnet test
 ```
 
+Deploy
+------
+
+Pushing to the `develop` or `master` branch will trigger an automated deployment via [GitHub Actions].
+
 [.NET]: https://dotnet.microsoft.com
 [Chocolatey]: https://chocolatey.org
+[Github Actions]: https://github.com/peeb-bot/peeb-bot/actions
 [Homebrew]: https://brew.sh

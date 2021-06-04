@@ -16,6 +16,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{A60CF940
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peeb.Bot.UnitTests", "tests\Peeb.Bot.UnitTests\Peeb.Bot.UnitTests.csproj", "{2E2AAE1C-41AF-4A50-AC00-DAD839B55AEE}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{A1F77A4F-D905-474F-94E4-D5A08D0DF3D0}"
+ProjectSection(SolutionItems) = preProject
+	.github\workflows\peeb-bot.yml = .github\workflows\peeb-bot.yml
+EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
