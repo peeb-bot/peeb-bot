@@ -9,7 +9,7 @@ Setup
 -----
 
 1. Install [.NET].
-2. Create a `PEEB_DISCORD_BOT_TOKEN` environment variable.
+2. Create `appsettings.Development.json`.
 
 ### macOS
 
@@ -18,7 +18,7 @@ Run the following zsh commands in the project's directory, [Homebrew] will also 
 ```zsh
 % /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 % brew install --cask dotnet-sdk
-% echo 'export PEEB_DISCORD_BOT_TOKEN=Secret' >> ~/.zshrc
+% cp src/Peeb.Bot/appsettings.Json src/Peeb.Bot/appsettings.Development.json
 ```
 
 ### Windows
@@ -28,7 +28,7 @@ Run the following PowerShell commands in the project's directory, [Chocolatey] w
 ```powershell
 > Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
 > choco install dotnet-sdk
-> [Environment]::SetEnvironmentVariable("PEEB_DISCORD_BOT_TOKEN", "Secret", "User")
+> copy src/Peeb.Bot/appsettings.Json src/Peeb.Bot/appsettings.Development.json
 ```
 
 Build

@@ -2,12 +2,13 @@ using System;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Moq;
 using NUnit.Framework;
 using Peeb.Bot.Discord.Commands;
 using Peeb.Bot.Discord.WebSocket;
 using Peeb.Bot.MessageHandlers;
+using Peeb.Bot.Settings;
 
 namespace Peeb.Bot.UnitTests.MessageHandlers
 {
@@ -94,28 +95,34 @@ namespace Peeb.Bot.UnitTests.MessageHandlers
     {
         public Mock<IMessageChannel> Channel { get; set; }
         public Mock<ICommandService> CommandService { get; set; }
-        public Mock<IConfiguration> Configuration { get; set; }
         public Mock<IDiscordSocketClient> DiscordSocketClient { get; set; }
+        public IMessage Message { get; set; }
+        public Mock<IOptionsMonitor<DiscordSettings>> OptionsMonitor { get; set; }
         public Mock<IResult> Result { get; set; }
         public Mock<IServiceProvider> ServiceProvider { get; set; }
+        public DiscordSettings Settings { get; set; }
         public SocketMessageHandler SocketMessageHandler { get; set; }
-        public IMessage Message { get; set; }
 
         public SocketMessageHandlerContext()
         {
             Channel = new Mock<IMessageChannel>();
             CommandService = new Mock<ICommandService>();
-            Configuration = new Mock<IConfiguration>();
             DiscordSocketClient = new Mock<IDiscordSocketClient>();
+            OptionsMonitor = new Mock<IOptionsMonitor<DiscordSettings>>();
             Result = new Mock<IResult>();
             ServiceProvider = new Mock<IServiceProvider>();
+            Settings = new DiscordSettings { Prefix = "?" };
 
-            CommandService.Setup(c => c.ExecuteAsync(It.IsAny<CommandContext>(), It.IsAny<int>(), It.IsAny<IServiceProvider>(), It.IsAny<MultiMatchHandling>()))
+            CommandService.Setup(c => c.ExecuteAsync(
+                    It.IsAny<CommandContext>(),
+                    It.IsAny<int>(),
+                    It.IsAny<IServiceProvider>(),
+                    It.IsAny<MultiMatchHandling>()))
                 .ReturnsAsync(Result.Object);
 
-            Configuration.Setup(c => c["CommandPrefix"]).Returns("?");
+            OptionsMonitor.Setup(s => s.CurrentValue).Returns(Settings);
 
-            SocketMessageHandler = new SocketMessageHandler(CommandService.Object, Configuration.Object, DiscordSocketClient.Object, ServiceProvider.Object);
+            SocketMessageHandler = new SocketMessageHandler(CommandService.Object, DiscordSocketClient.Object, OptionsMonitor.Object, ServiceProvider.Object);
         }
 
         public SocketMessageHandlerContext SetUnknownCommandError()

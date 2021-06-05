@@ -1,7 +1,11 @@
+*.feature.cs
 *.user
+*.suo
 .DS_Store
 .idea/
+.vs/
 .vscode/
+appsettings.Development.json
 bin/
 dist/
 logs/

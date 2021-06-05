@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Peeb.Bot.Startup;
 
@@ -13,11 +12,11 @@ namespace Peeb.Bot
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureAppConfiguration(c => c.AddEnvironmentVariables("PEEB_"))
-                .ConfigureServices(s => s
+                .ConfigureServices((c, s) => s
                     .AddDiscord()
                     .AddHostedServices()
                     .AddMessageHandlers()
-                    .AddServices());
+                    .AddServices()
+                    .AddSettings(c.Configuration));
     }
 }
