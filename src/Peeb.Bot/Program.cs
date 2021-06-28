@@ -13,10 +13,13 @@ namespace Peeb.Bot
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureServices((c, s) => s
-                    .AddDiscord()
+                    .AddAutoMapper()
+                    .AddDatabase(c.Configuration)
+                    .AddDiscord(c.Configuration)
                     .AddHostedServices()
-                    .AddMessageHandlers()
+                    .AddMediatR()
                     .AddServices()
-                    .AddSettings(c.Configuration));
+                    .AddTimers()
+                    .AddXivApi(c.Configuration));
     }
 }

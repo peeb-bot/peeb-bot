@@ -7,7 +7,10 @@ namespace Peeb.Bot.Startup
     {
         public static IServiceCollection AddServices(this IServiceCollection services)
         {
-            return services.AddSingleton<IDateTimeOffsetService, DateTimeOffsetService>();
+            return services
+                .AddSingleton<IDateTimeOffsetService, DateTimeOffsetService>()
+                .AddSingleton<ITaskService, TaskService>()
+                .AddScoped<INotificationsService, NotificationsService>();
         }
     }
 }

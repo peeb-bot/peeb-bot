@@ -7,7 +7,7 @@ namespace Peeb.Bot.Startup
     {
         public static IServiceCollection AddHostedServices(this IServiceCollection services)
         {
-            return services.AddHostedService<BotHostedService>();
+            return services.AddHostedService<PeebHostedService>();
         }
     }
 }

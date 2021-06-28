@@ -1,25 +1,26 @@
 using System.Threading.Tasks;
-using Discord;
 using Discord.Commands;
-using Peeb.Bot.Services;
+using MediatR;
+using Peeb.Bot.Commands.Ping;
+using Peeb.Bot.Results.Ok;
 
 namespace Peeb.Bot.Modules
 {
     public class PingModule : ModuleBase<ICommandContext>
     {
-        private readonly IDateTimeOffsetService _dateTimeOffsetService;
+        private readonly IMediator _mediator;
 
-        public PingModule(IDateTimeOffsetService dateTimeOffsetService)
+        public PingModule(IMediator mediator)
         {
-            _dateTimeOffsetService = dateTimeOffsetService;
+            _mediator = mediator;
         }
 
         [Command("ping")]
-        public Task Ping()
+        public async Task<RuntimeResult> Ping()
         {
-            return ReplyAsync(
-                $"Pong! Responded in {_dateTimeOffsetService.UtcNow.Subtract(Context.Message.Timestamp).TotalSeconds:0.000}s",
-                messageReference: new MessageReference(Context.Message.Id));
+            var result = await _mediator.Send(new PingCommand(Context.Message.Timestamp));
+
+            return new OkResult($"Pong! Responded in {result.Elapsed.TotalSeconds:0.000}s");
         }
     }
 }

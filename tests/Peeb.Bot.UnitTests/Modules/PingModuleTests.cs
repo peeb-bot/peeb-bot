@@ -1,11 +1,15 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
+using FluentAssertions;
+using MediatR;
 using Moq;
 using NUnit.Framework;
+using Peeb.Bot.Commands.Ping;
 using Peeb.Bot.Modules;
-using Peeb.Bot.Services;
+using Peeb.Bot.Results.Ok;
 
 namespace Peeb.Bot.UnitTests.Modules
 {
@@ -14,52 +18,49 @@ namespace Peeb.Bot.UnitTests.Modules
     public class PingModuleTests : TestBase<PingModuleTestsContext>
     {
         [Test]
-        public Task Ping_ShouldReplyWithPongMessage()
+        public Task Ping_ShouldSendCommand()
         {
             return TestAsync(
                 c => c.Ping(),
-                c => c.Channel.Verify(
-                    ch => ch.SendMessageAsync(
-                        "Pong! Responded in 0.543s",
-                        false,
-                        null,
-                        null,
-                        null,
-                        It.Is<MessageReference>(r => r.MessageId.Value == c.Message.Id)),
-                    Times.Once));
+                c => c.Mediator.Verify(m => m.Send(It.Is<PingCommand>(cm => cm.MessageTimestamp == c.Timestamp), CancellationToken.None)));
+        }
+
+        [Test]
+        public Task Ping_ShouldReturnOkResult()
+        {
+            return TestAsync(
+                c => c.Ping(),
+                (c, r) => r.Should().NotBeNull()
+                    .And.BeOfType<OkResult>()
+                    .Which.Message.Should().Be("Pong! Responded in 0.543s"));
         }
     }
 
     public class PingModuleTestsContext
     {
-        public Mock<IMessageChannel> Channel { get; set; }
-        public ICommandContext Context { get; set; }
-        public IDateTimeOffsetService DateTimeOffsetService { get; set; }
-        public IUserMessage Message { get; set; }
+        public Mock<ICommandContext> Context { get; set; }
+        public TimeSpan Elapsed { get; set; }
+        public Mock<IMediator> Mediator { get; set; }
+        public Mock<IUserMessage> Message { get; set; }
         public PingModule Module { get; set; }
-        public DateTimeOffset UtcNow { get; set; }
+        public DateTimeOffset Timestamp { get; set; }
 
         public PingModuleTestsContext()
         {
-            UtcNow = DateTimeOffset.UnixEpoch;
-            Channel = new Mock<IMessageChannel>();
-            Message = Mock.Of<IUserMessage>(m => m.Id == 1 && m.Timestamp == UtcNow.Subtract(TimeSpan.FromSeconds(0.5425)));
-            Context = Mock.Of<ICommandContext>(c => c.Channel == Channel.Object && c.Message == Message);
-            DateTimeOffsetService = Mock.Of<IDateTimeOffsetService>(s => s.UtcNow == UtcNow);
+            Context = new Mock<ICommandContext>();
+            Timestamp = DateTimeOffset.UtcNow.Subtract(TimeSpan.FromSeconds(0.5425));
+            Elapsed = DateTimeOffset.UtcNow.Subtract(Timestamp);
+            Mediator = new Mock<IMediator>();
+            Message = new Mock<IUserMessage>();
 
-            Channel.Setup(c => c.SendMessageAsync(
-                    It.IsAny<string>(),
-                    It.IsAny<bool>(),
-                    It.IsAny<Embed>(),
-                    It.IsAny<RequestOptions>(),
-                    It.IsAny<AllowedMentions>(),
-                    It.IsAny<MessageReference>()))
-                .ReturnsAsync(Mock.Of<IUserMessage>);
+            Mediator.Setup(m => m.Send(It.IsAny<PingCommand>(), CancellationToken.None)).ReturnsAsync(new PingCommandResult(Elapsed));
+            Message.SetupGet(m => m.Timestamp).Returns(Timestamp);
+            Context.SetupGet(c => c.Message).Returns(Message.Object);
 
-            Module = new PingModule(DateTimeOffsetService).Set(m => m.Context, Context);
+            Module = new PingModule(Mediator.Object).Set(m => m.Context, Context.Object);
         }
 
-        public Task Ping()
+        public Task<RuntimeResult> Ping()
         {
             return Module.Ping();
         }
