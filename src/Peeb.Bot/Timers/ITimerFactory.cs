@@ -4,6 +4,6 @@ namespace Peeb.Bot.Timers
 {
     public interface ITimerFactory
     {
-        ITimer CreateTimer(TimeSpan dueTime, Action callback);
+        ITimer CreateTimer(Action callback, TimeSpan dueTime, TimeSpan period);
     }
 }

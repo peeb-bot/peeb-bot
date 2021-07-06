@@ -4,9 +4,9 @@ namespace Peeb.Bot.Timers
 {
     public class TimerFactory : ITimerFactory
     {
-        public ITimer CreateTimer(TimeSpan dueTime, Action callback)
+        public ITimer CreateTimer(Action callback, TimeSpan dueTime, TimeSpan period)
         {
-            return new TimerWrapper(dueTime, callback);
+            return new TimerWrapper(callback, dueTime, period);
         }
     }
 }

@@ -9,5 +9,6 @@ namespace Peeb.Bot.Clients.Discord
     {
         event Func<SocketMessage, Task> MessageReceived;
         Task LoginAsync(TokenType tokenType, string token, bool validateToken = true);
+        Task SetGameAsync(string name, string streamUrl = null, ActivityType type = ActivityType.Playing);
     }
 }

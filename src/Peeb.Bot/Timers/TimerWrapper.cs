@@ -10,7 +10,7 @@ namespace Peeb.Bot.Timers
 
         private readonly Timer _timer;
 
-        public TimerWrapper(TimeSpan dueTime, Action callback)
+        public TimerWrapper(Action callback, TimeSpan dueTime, TimeSpan period)
         {
             _timer = new Timer(
                 _ =>
@@ -21,7 +21,7 @@ namespace Peeb.Bot.Timers
                 },
                 null,
                 dueTime,
-                Timeout.InfiniteTimeSpan);
+                 period);
         }
 
         public ValueTask DisposeAsync()

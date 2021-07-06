@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
@@ -19,7 +20,10 @@ namespace Peeb.Bot.Clients.Discord.Handlers
 
         protected override Task CommandExecuting(ICommandContext commandContext)
         {
-            _timer = _timerFactory.CreateTimer(TimeSpan.FromSeconds(3), async () => await commandContext.Message.AddReactionAsync(EmojiHelper.Clock2));
+            _timer = _timerFactory.CreateTimer(
+                async () => await commandContext.Message.AddReactionAsync(EmojiHelper.Clock2),
+                TimeSpan.FromSeconds(3),
+                Timeout.InfiniteTimeSpan);
 
             return Task.CompletedTask;
         }

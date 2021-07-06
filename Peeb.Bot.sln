@@ -6,6 +6,7 @@ ProjectSection(SolutionItems) = preProject
 	.editorconfig = .editorconfig
 	.gitignore = .gitignore
 	LICENSE = LICENSE
+	peeb.png = peeb.png
 EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{D094E753-77F9-4864-B799-7FC04EBF2795}"

@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
@@ -19,7 +20,7 @@ namespace Peeb.Bot.UnitTests.Clients.Discord.Handlers
         {
             return TestAsync(
                 c => c.CommandExecuting(),
-                c => c.TimerFactory.Verify(f => f.CreateTimer(TimeSpan.FromSeconds(3), It.IsAny<Action>()), Times.Once));
+                c => c.TimerFactory.Verify(f => f.CreateTimer(It.IsAny<Action>(), TimeSpan.FromSeconds(3), Timeout.InfiniteTimeSpan), Times.Once));
         }
 
         [Test]
@@ -88,7 +89,7 @@ namespace Peeb.Bot.UnitTests.Clients.Discord.Handlers
             CommandContext.SetupGet(c => c.Client.CurrentUser).Returns(CurrentUser.Object);
             Message.Setup(m => m.AddReactionAsync(It.IsAny<Emoji>(), It.IsAny<RequestOptions>())).Returns(Task.CompletedTask);
             Timer.SetupGet(t => t.Elapsed).Returns(false);
-            TimerFactory.Setup(f => f.CreateTimer(It.IsAny<TimeSpan>(), It.IsAny<Action>())).Returns(Timer.Object);
+            TimerFactory.Setup(f => f.CreateTimer(It.IsAny<Action>(), It.IsAny<TimeSpan>(), It.IsAny<TimeSpan>())).Returns(Timer.Object);
 
             Timer
                 .InSequence(Sequence)
@@ -108,8 +109,8 @@ namespace Peeb.Bot.UnitTests.Clients.Discord.Handlers
             Timer.SetupGet(t => t.Elapsed).Returns(true);
 
             TimerFactory
-                .Setup(f => f.CreateTimer(It.IsAny<TimeSpan>(), It.IsAny<Action>()))
-                .Callback((TimeSpan _, Action callback) => callback())
+                .Setup(f => f.CreateTimer(It.IsAny<Action>(), It.IsAny<TimeSpan>(), It.IsAny<TimeSpan>()))
+                .Callback((Action callback, TimeSpan _, TimeSpan _) => callback())
                 .Returns(Timer.Object);
 
             return this;
