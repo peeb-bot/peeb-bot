@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Peeb.Bot.Models
 {
-    public class User
+    public class User : Entity
     {
         public ulong Id { get; private set; }
         public DateTimeOffset Created { get; private set; }

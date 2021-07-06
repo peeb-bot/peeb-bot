@@ -2,7 +2,7 @@ using System;
 
 namespace Peeb.Bot.Models
 {
-    public abstract class Setting
+    public abstract class Setting : Entity
     {
         public Guid Id { get; private set; }
         public ulong GuildId { get; private set; }
