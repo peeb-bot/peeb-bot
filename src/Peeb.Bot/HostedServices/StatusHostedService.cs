@@ -14,6 +14,7 @@ namespace Peeb.Bot.HostedServices
         {
             "dead for Zenos",
             "guitar with Y'shtola",
+            "WoW! jk",
             "Air Force One",
             "Any Way the Wind Blows",
             "Cliffhanger",
@@ -26,7 +27,8 @@ namespace Peeb.Bot.HostedServices
             "Out on a Limb",
             "The Finer Miner",
             "The Moogle's Paw",
-            "The Slice Is Right"
+            "The Slice Is Right",
+            "Triple Triad"
         };
 
         private readonly IDiscordSocketClient _discordSocketClient;

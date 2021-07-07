@@ -39,6 +39,14 @@ namespace Peeb.Bot.UnitTests.HostedServices
                 c => c.StartAsync(),
                 c => c.DiscordSocketClient.Verify(sc => sc.SetGameAsync("guitar with Y'shtola", null, ActivityType.Playing), Times.Once));
         }
+
+        [Test]
+        public Task StopAsync_ShouldDisposeTimer()
+        {
+            return TestAsync(
+                c => c.StopAsync(),
+                c => c.Timer.Verify(t => t.DisposeAsync(), Times.Once));
+        }
     }
 
     public class StatusHostedServiceTestsContext
@@ -55,6 +63,7 @@ namespace Peeb.Bot.UnitTests.HostedServices
             TimerFactory = new Mock<ITimerFactory>();
 
             Timer.SetupGet(t => t.Elapsed).Returns(false);
+            TimerFactory.Setup(f => f.CreateTimer(It.IsAny<Action>(), It.IsAny<TimeSpan>(), It.IsAny<TimeSpan>())).Returns(Timer.Object);
 
             HostedService = new StatusHostedService(DiscordSocketClient.Object, TimerFactory.Object);
         }
@@ -62,6 +71,12 @@ namespace Peeb.Bot.UnitTests.HostedServices
         public Task StartAsync()
         {
             return HostedService.StartAsync(CancellationToken.None);
+        }
+
+        public async Task StopAsync()
+        {
+            await StartAsync();
+            await HostedService.StopAsync(CancellationToken.None);
         }
 
         public StatusHostedServiceTestsContext SetDueTimeElapsed()
