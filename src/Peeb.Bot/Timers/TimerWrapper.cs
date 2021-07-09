@@ -6,27 +6,16 @@ namespace Peeb.Bot.Timers
 {
     public class TimerWrapper : ITimer
     {
-        public bool Elapsed { get; private set; }
+        private Timer _timer;
 
-        private readonly Timer _timer;
-
-        public TimerWrapper(Action callback, TimeSpan dueTime, TimeSpan period)
+        public void Start(Action callback, TimeSpan dueTime, TimeSpan period)
         {
-            _timer = new Timer(
-                _ =>
-                {
-                    Elapsed = true;
-
-                    callback();
-                },
-                null,
-                dueTime,
-                 period);
+            _timer = new Timer(_ => callback(), null, dueTime, period);
         }
 
-        public ValueTask DisposeAsync()
+        public async Task Stop()
         {
-            return _timer.DisposeAsync();
+            await _timer.DisposeAsync();
         }
     }
 }

@@ -31,30 +31,29 @@ namespace Peeb.Bot.HostedServices
             "Triple Triad"
         };
 
+        private readonly IAsyncTimer _timer;
         private readonly IDiscordSocketClient _discordSocketClient;
-        private readonly ITimerFactory _timerFactory;
-        private ITimer _timer;
         private int _index;
 
-        public StatusHostedService(IDiscordSocketClient discordSocketClient, ITimerFactory timerFactory)
+        public StatusHostedService(IAsyncTimer timer, IDiscordSocketClient discordSocketClient)
         {
+            _timer = timer;
             _discordSocketClient = discordSocketClient;
-            _timerFactory = timerFactory;
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            _timer = _timerFactory.CreateTimer(
-                async () => await _discordSocketClient.SetGameAsync(_index == Games.Count ? Games[_index = 0] : Games[_index++]),
+            _timer.Start(
+                () => _discordSocketClient.SetGameAsync(_index == Games.Count ? Games[_index = 0] : Games[_index++]),
                 TimeSpan.Zero,
                 TimeSpan.FromHours(1));
 
             return Task.CompletedTask;
         }
 
-        public async Task StopAsync(CancellationToken cancellationToken)
+        public Task StopAsync(CancellationToken cancellationToken)
         {
-            await _timer.DisposeAsync();
+            return _timer.Stop();
         }
     }
 }

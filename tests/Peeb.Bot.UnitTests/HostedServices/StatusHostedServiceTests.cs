@@ -15,11 +15,11 @@ namespace Peeb.Bot.UnitTests.HostedServices
     public class StatusHostedServiceTests : TestBase<StatusHostedServiceTestsContext>
     {
         [Test]
-        public Task StartAsync_ShouldCreateTimer()
+        public Task StartAsync_ShouldStartTimer()
         {
             return TestAsync(
                 c => c.StartAsync(),
-                c => c.TimerFactory.Verify(f => f.CreateTimer(It.IsAny<Action>(), TimeSpan.Zero, TimeSpan.FromHours(1)), Times.Once));
+                c => c.Timer.Verify(t => t.Start(It.IsAny<Func<Task>>(), TimeSpan.Zero, TimeSpan.FromHours(1)), Times.Once));
         }
 
         [Test]
@@ -41,11 +41,11 @@ namespace Peeb.Bot.UnitTests.HostedServices
         }
 
         [Test]
-        public Task StopAsync_ShouldDisposeTimer()
+        public Task StopAsync_ShouldStopTimer()
         {
             return TestAsync(
                 c => c.StopAsync(),
-                c => c.Timer.Verify(t => t.DisposeAsync(), Times.Once));
+                c => c.Timer.Verify(t => t.Stop(), Times.Once));
         }
     }
 
@@ -53,19 +53,16 @@ namespace Peeb.Bot.UnitTests.HostedServices
     {
         public Mock<IDiscordSocketClient> DiscordSocketClient { get; set; }
         public StatusHostedService HostedService { get; set; }
-        public Mock<ITimer> Timer { get; set; }
-        public Mock<ITimerFactory> TimerFactory { get; set; }
+        public Mock<IAsyncTimer> Timer { get; set; }
 
         public StatusHostedServiceTestsContext()
         {
             DiscordSocketClient = new Mock<IDiscordSocketClient>();
-            Timer = new Mock<ITimer>();
-            TimerFactory = new Mock<ITimerFactory>();
+            Timer = new Mock<IAsyncTimer>();
 
             Timer.SetupGet(t => t.Elapsed).Returns(false);
-            TimerFactory.Setup(f => f.CreateTimer(It.IsAny<Action>(), It.IsAny<TimeSpan>(), It.IsAny<TimeSpan>())).Returns(Timer.Object);
 
-            HostedService = new StatusHostedService(DiscordSocketClient.Object, TimerFactory.Object);
+            HostedService = new StatusHostedService(Timer.Object, DiscordSocketClient.Object);
         }
 
         public Task StartAsync()
@@ -81,28 +78,26 @@ namespace Peeb.Bot.UnitTests.HostedServices
 
         public StatusHostedServiceTestsContext SetDueTimeElapsed()
         {
-            Timer.SetupGet(t => t.Elapsed).Returns(true);
+            Timer
+                .Setup(t => t.Start(It.IsAny<Func<Task>>(), It.IsAny<TimeSpan>(), It.IsAny<TimeSpan>()))
+                .Callback((Func<Task> callback, TimeSpan _, TimeSpan _) => callback());
 
-            TimerFactory
-                .Setup(f => f.CreateTimer(It.IsAny<Action>(), It.IsAny<TimeSpan>(), It.IsAny<TimeSpan>()))
-                .Callback((Action callback, TimeSpan _, TimeSpan _) => callback())
-                .Returns(Timer.Object);
+            Timer.SetupGet(t => t.Elapsed).Returns(true);
 
             return this;
         }
 
         public StatusHostedServiceTestsContext SetPeriodElapsed()
         {
-            Timer.SetupGet(t => t.Elapsed).Returns(true);
-
-            TimerFactory
-                .Setup(f => f.CreateTimer(It.IsAny<Action>(), It.IsAny<TimeSpan>(), It.IsAny<TimeSpan>()))
-                .Callback((Action callback, TimeSpan _, TimeSpan _) =>
+            Timer
+                .Setup(t => t.Start(It.IsAny<Func<Task>>(), It.IsAny<TimeSpan>(), It.IsAny<TimeSpan>()))
+                .Callback(async (Func<Task> callback, TimeSpan _, TimeSpan _) =>
                 {
-                    callback();
-                    callback();
-                })
-                .Returns(Timer.Object);
+                    await callback();
+                    await callback();
+                });
+
+            Timer.SetupGet(t => t.Elapsed).Returns(true);
 
             return this;
         }

@@ -7,7 +7,9 @@ namespace Peeb.Bot.Startup
     {
         public static IServiceCollection AddTimers(this IServiceCollection services)
         {
-            return services.AddSingleton<ITimerFactory, TimerFactory>();
+            return services
+                .AddTransient<IAsyncTimer, AsyncTimer>()
+                .AddTransient<ITimer, TimerWrapper>();
         }
     }
 }

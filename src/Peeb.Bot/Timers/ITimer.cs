@@ -1,9 +1,11 @@
 using System;
+using System.Threading.Tasks;
 
 namespace Peeb.Bot.Timers
 {
-    public interface ITimer : IAsyncDisposable
+    public interface ITimer
     {
-        bool Elapsed { get; }
+        void Start(Action callback, TimeSpan dueTime, TimeSpan period);
+        Task Stop();
     }
 }

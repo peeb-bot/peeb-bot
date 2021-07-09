@@ -16,11 +16,11 @@ namespace Peeb.Bot.UnitTests.Clients.Discord.Handlers
     public class WorkingNotifierHandlerTests : TestBase<WorkingNotifierHandlerTestsContext>
     {
         [Test]
-        public Task CommandExecuting_ShouldCreateTimer()
+        public Task CommandExecuting_ShouldStartTimer()
         {
             return TestAsync(
                 c => c.CommandExecuting(),
-                c => c.TimerFactory.Verify(f => f.CreateTimer(It.IsAny<Action>(), TimeSpan.FromSeconds(3), Timeout.InfiniteTimeSpan), Times.Once));
+                c => c.Timer.Verify(t => t.Start(It.IsAny<Func<Task>>(), TimeSpan.FromSeconds(3), Timeout.InfiniteTimeSpan), Times.Once));
         }
 
         [Test]
@@ -41,11 +41,11 @@ namespace Peeb.Bot.UnitTests.Clients.Discord.Handlers
         }
 
         [Test]
-        public Task ResultExecuting_ShouldDisposeTimer()
+        public Task ResultExecuting_ShouldStopTimer()
         {
             return TestAsync(
                 c => c.ResultExecuting(),
-                c => c.Timer.Verify(t => t.DisposeAsync(), Times.Once));
+                c => c.Timer.Verify(t => t.Stop(), Times.Once));
         }
 
         [Test]
@@ -73,8 +73,7 @@ namespace Peeb.Bot.UnitTests.Clients.Discord.Handlers
         public ICommandHandler Handler { get; set; }
         public Mock<IUserMessage> Message { get; set; }
         public MockSequence Sequence { get; set; }
-        public Mock<ITimer> Timer { get; set; }
-        public Mock<ITimerFactory> TimerFactory { get; set; }
+        public Mock<IAsyncTimer> Timer { get; set; }
 
         public WorkingNotifierHandlerTestsContext()
         {
@@ -82,36 +81,34 @@ namespace Peeb.Bot.UnitTests.Clients.Discord.Handlers
             CurrentUser = new Mock<ISelfUser>();
             Message = new Mock<IUserMessage>(MockBehavior.Strict);
             Sequence = new MockSequence();
-            Timer = new Mock<ITimer>(MockBehavior.Strict);
-            TimerFactory = new Mock<ITimerFactory>();
+            Timer = new Mock<IAsyncTimer>(MockBehavior.Strict);
 
             CommandContext.SetupGet(c => c.Message).Returns(Message.Object);
             CommandContext.SetupGet(c => c.Client.CurrentUser).Returns(CurrentUser.Object);
             Message.Setup(m => m.AddReactionAsync(It.IsAny<Emoji>(), It.IsAny<RequestOptions>())).Returns(Task.CompletedTask);
+            Timer.Setup(t => t.Start(It.IsAny<Func<Task>>(), It.IsAny<TimeSpan>(), It.IsAny<TimeSpan>()));
             Timer.SetupGet(t => t.Elapsed).Returns(false);
-            TimerFactory.Setup(f => f.CreateTimer(It.IsAny<Action>(), It.IsAny<TimeSpan>(), It.IsAny<TimeSpan>())).Returns(Timer.Object);
 
             Timer
                 .InSequence(Sequence)
-                .Setup(t => t.DisposeAsync())
-                .Returns(ValueTask.CompletedTask);
+                .Setup(t => t.Stop())
+                .Returns(Task.CompletedTask);
 
             Message
                 .InSequence(Sequence)
                 .Setup(m => m.RemoveReactionAsync(It.IsAny<Emoji>(), It.IsAny<IUser>(), It.IsAny<RequestOptions>()))
                 .Returns(Task.CompletedTask);
 
-            Handler = new WorkingNotifierHandler(TimerFactory.Object);
+            Handler = new WorkingNotifierHandler(Timer.Object);
         }
 
         public WorkingNotifierHandlerTestsContext SetTimerElapsed()
         {
-            Timer.SetupGet(t => t.Elapsed).Returns(true);
+            Timer
+                .Setup(t => t.Start(It.IsAny<Func<Task>>(), It.IsAny<TimeSpan>(), It.IsAny<TimeSpan>()))
+                .Callback((Func<Task> callback, TimeSpan _, TimeSpan _) => callback());
 
-            TimerFactory
-                .Setup(f => f.CreateTimer(It.IsAny<Action>(), It.IsAny<TimeSpan>(), It.IsAny<TimeSpan>()))
-                .Callback((Action callback, TimeSpan _, TimeSpan _) => callback())
-                .Returns(Timer.Object);
+            Timer.SetupGet(t => t.Elapsed).Returns(true);
 
             return this;
         }
