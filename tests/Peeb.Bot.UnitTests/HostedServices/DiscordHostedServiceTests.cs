@@ -3,16 +3,12 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Discord;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using NUnit.Framework;
 using Peeb.Bot.Clients.Discord;
 using Peeb.Bot.Clients.Discord.Handlers;
 using Peeb.Bot.Clients.Discord.Services;
-using Peeb.Bot.Data;
 using Peeb.Bot.HostedServices;
 using Peeb.Bot.Settings;
 
@@ -20,16 +16,8 @@ namespace Peeb.Bot.UnitTests.HostedServices
 {
     [TestFixture]
     [Parallelizable]
-    public class PeebHostedServiceTests : TestBase<PeebHostedServiceTestsContext>
+    public class DiscordHostedServiceTests : TestBase<DiscordHostedServiceTestsContext>
     {
-        [Test]
-        public Task StartAsync_ShouldCreateDatabase()
-        {
-            return TestAsync(
-                c => c.StartAsync(),
-                c => c.Database.Verify(d => d.EnsureCreatedAsync(CancellationToken.None), Times.Once));
-        }
-
         [Test]
         public Task StartAsync_ShouldAddMessageReceivedHandler()
         {
@@ -71,6 +59,14 @@ namespace Peeb.Bot.UnitTests.HostedServices
         }
 
         [Test]
+        public Task StartAsync_ShouldSetGame()
+        {
+            return TestAsync(
+                c => c.StartAsync(),
+                c => c.DiscordSocketClient.Verify(sc => sc.SetGameAsync("Final Fantasy XIV", null, ActivityType.Playing), Times.Once));
+        }
+
+        [Test]
         public Task StopAsync_ShouldStopDiscordSocketClient()
         {
             return TestAsync(
@@ -79,42 +75,30 @@ namespace Peeb.Bot.UnitTests.HostedServices
         }
     }
 
-    public class PeebHostedServiceTestsContext
+    public class DiscordHostedServiceTestsContext
     {
         public Mock<ICommandService> CommandService { get; set; }
-        public Mock<DatabaseFacade> Database { get; set; }
-        public Mock<PeebDbContext> Db { get; set; }
-        public Mock<IDbContextFactory<PeebDbContext>> DbContextFactory { get; set; }
         public Mock<IDiscordSocketClient> DiscordSocketClient { get; set; }
-        public PeebHostedService HostedService { get; set; }
-        public Mock<ILogger<PeebHostedService>> Logger { get; set; }
+        public DiscordHostedService HostedService { get; set; }
         public Mock<IMessageHandler> MessageHandler { get; set; }
         public Mock<IOptionsMonitor<DiscordSettings>> OptionsMonitor { get; set; }
         public Mock<IServiceProvider> ServiceProvider { get; set; }
         public DiscordSettings Settings { get; set; }
 
-        public PeebHostedServiceTestsContext()
+        public DiscordHostedServiceTestsContext()
         {
             CommandService = new Mock<ICommandService>();
-            Db = new Mock<PeebDbContext>();
-            Database = new Mock<DatabaseFacade>(Db.Object);
-            DbContextFactory = new Mock<IDbContextFactory<PeebDbContext>>();
             DiscordSocketClient = new Mock<IDiscordSocketClient>();
-            Logger = new Mock<ILogger<PeebHostedService>>();
             MessageHandler = new Mock<IMessageHandler>();
             OptionsMonitor = new Mock<IOptionsMonitor<DiscordSettings>>();
             ServiceProvider = new Mock<IServiceProvider>();
             Settings = new DiscordSettings { Token = "Secret" };
 
-            Db.SetupGet(d => d.Database).Returns(Database.Object);
-            DbContextFactory.Setup(f => f.CreateDbContext()).Returns(Db.Object);
             OptionsMonitor.SetupGet(m => m.CurrentValue).Returns(Settings);
 
-            HostedService = new PeebHostedService(
+            HostedService = new DiscordHostedService(
                 CommandService.Object,
-                DbContextFactory.Object,
                 DiscordSocketClient.Object,
-                Logger.Object,
                 MessageHandler.Object,
                 OptionsMonitor.Object,
                 ServiceProvider.Object);
