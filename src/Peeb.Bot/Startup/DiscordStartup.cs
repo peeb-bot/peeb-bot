@@ -5,11 +5,11 @@ using Peeb.Bot.Clients.Discord;
 using Peeb.Bot.Clients.Discord.Caches;
 using Peeb.Bot.Clients.Discord.Handlers;
 using Peeb.Bot.Clients.Discord.Services;
+using Peeb.Bot.Options;
 using Peeb.Bot.Results.Character;
 using Peeb.Bot.Results.Execute;
 using Peeb.Bot.Results.Ok;
 using Peeb.Bot.Results.Unsuccessful;
-using Peeb.Bot.Settings;
 
 namespace Peeb.Bot.Startup
 {
@@ -29,7 +29,7 @@ namespace Peeb.Bot.Startup
                 .AddSingleton<IDiscordSocketClient, DiscordSocketClientWrapper>()
                 .AddSingleton<IMessageHandler, MessageHandler>()
                 .AddSingleton<IServiceScopeCache, ServiceScopeCache>()
-                .Configure<DiscordSettings>(configuration.GetSection("Discord"));
+                .Configure<DiscordOptions>(configuration.GetSection("Discord"));
         }
     }
 }

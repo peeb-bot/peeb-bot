@@ -3,7 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Peeb.Bot.Clients.XivApi;
 using Peeb.Bot.Clients.XivApi.Handlers;
-using Peeb.Bot.Settings;
+using Peeb.Bot.Options;
 using Polly;
 using Polly.Contrib.WaitAndRetry;
 
@@ -20,7 +20,7 @@ namespace Peeb.Bot.Startup
 
             return services
                 .AddTransient<AuthenticationHandler>()
-                .Configure<XivApiSettings>(configuration.GetSection("XivApi"));
+                .Configure<XivApiOptions>(configuration.GetSection("XivApi"));
         }
     }
 }

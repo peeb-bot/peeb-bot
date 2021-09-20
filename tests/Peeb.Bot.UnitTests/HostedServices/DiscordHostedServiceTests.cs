@@ -10,7 +10,7 @@ using Peeb.Bot.Clients.Discord;
 using Peeb.Bot.Clients.Discord.Handlers;
 using Peeb.Bot.Clients.Discord.Services;
 using Peeb.Bot.HostedServices;
-using Peeb.Bot.Settings;
+using Peeb.Bot.Options;
 
 namespace Peeb.Bot.UnitTests.HostedServices
 {
@@ -47,7 +47,7 @@ namespace Peeb.Bot.UnitTests.HostedServices
         {
             return TestAsync(
                 c => c.StartAsync(),
-                c => c.DiscordSocketClient.Verify(sc => sc.LoginAsync(TokenType.Bot, c.Settings.Token, true), Times.Once));
+                c => c.DiscordSocketClient.Verify(sc => sc.LoginAsync(TokenType.Bot, c.Options.Token, true), Times.Once));
         }
 
         [Test]
@@ -81,20 +81,20 @@ namespace Peeb.Bot.UnitTests.HostedServices
         public Mock<IDiscordSocketClient> DiscordSocketClient { get; set; }
         public DiscordHostedService HostedService { get; set; }
         public Mock<IMessageHandler> MessageHandler { get; set; }
-        public Mock<IOptionsMonitor<DiscordSettings>> OptionsMonitor { get; set; }
+        public DiscordOptions Options { get; set; }
+        public Mock<IOptionsMonitor<DiscordOptions>> OptionsMonitor { get; set; }
         public Mock<IServiceProvider> ServiceProvider { get; set; }
-        public DiscordSettings Settings { get; set; }
 
         public DiscordHostedServiceTestsContext()
         {
             CommandService = new Mock<ICommandService>();
             DiscordSocketClient = new Mock<IDiscordSocketClient>();
             MessageHandler = new Mock<IMessageHandler>();
-            OptionsMonitor = new Mock<IOptionsMonitor<DiscordSettings>>();
+            Options = new DiscordOptions { Token = "Secret" };
+            OptionsMonitor = new Mock<IOptionsMonitor<DiscordOptions>>();
             ServiceProvider = new Mock<IServiceProvider>();
-            Settings = new DiscordSettings { Token = "Secret" };
 
-            OptionsMonitor.SetupGet(m => m.CurrentValue).Returns(Settings);
+            OptionsMonitor.SetupGet(m => m.CurrentValue).Returns(Options);
 
             HostedService = new DiscordHostedService(
                 CommandService.Object,

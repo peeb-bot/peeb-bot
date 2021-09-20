@@ -8,7 +8,7 @@ using Microsoft.Extensions.Options;
 using Peeb.Bot.Clients.Discord;
 using Peeb.Bot.Clients.Discord.Handlers;
 using Peeb.Bot.Clients.Discord.Services;
-using Peeb.Bot.Settings;
+using Peeb.Bot.Options;
 
 namespace Peeb.Bot.HostedServices
 {
@@ -17,20 +17,20 @@ namespace Peeb.Bot.HostedServices
         private readonly ICommandService _commandService;
         private readonly IDiscordSocketClient _discordSocketClient;
         private readonly IMessageHandler _messageHandler;
-        private readonly IOptionsMonitor<DiscordSettings> _settings;
+        private readonly IOptionsMonitor<DiscordOptions> _options;
         private readonly IServiceProvider _serviceProvider;
 
         public DiscordHostedService(
             ICommandService commandService,
             IDiscordSocketClient discordSocketClient,
             IMessageHandler messageHandler,
-            IOptionsMonitor<DiscordSettings> settings,
+            IOptionsMonitor<DiscordOptions> options,
             IServiceProvider serviceProvider)
         {
             _commandService = commandService;
             _discordSocketClient = discordSocketClient;
             _messageHandler = messageHandler;
-            _settings = settings;
+            _options = options;
             _serviceProvider = serviceProvider;
         }
 
@@ -40,7 +40,7 @@ namespace Peeb.Bot.HostedServices
             _commandService.CommandExecuted += _messageHandler.CommandExecuted;
 
             await _commandService.AddModulesAsync(Assembly.GetEntryAssembly(), _serviceProvider);
-            await _discordSocketClient.LoginAsync(TokenType.Bot, _settings.CurrentValue.Token);
+            await _discordSocketClient.LoginAsync(TokenType.Bot, _options.CurrentValue.Token);
             await _discordSocketClient.StartAsync();
             await _discordSocketClient.SetGameAsync("Final Fantasy XIV");
         }

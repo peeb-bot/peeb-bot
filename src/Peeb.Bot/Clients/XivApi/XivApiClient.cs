@@ -6,7 +6,7 @@ using Flurl;
 using Microsoft.Extensions.Options;
 using Peeb.Bot.Clients.XivApi.Extensions;
 using Peeb.Bot.Clients.XivApi.Responses;
-using Peeb.Bot.Settings;
+using Peeb.Bot.Options;
 
 namespace Peeb.Bot.Clients.XivApi
 {
@@ -14,7 +14,7 @@ namespace Peeb.Bot.Clients.XivApi
     {
         private readonly HttpClient _httpClient;
 
-        public XivApiClient(HttpClient httpClient, IOptionsMonitor<XivApiSettings> settings)
+        public XivApiClient(HttpClient httpClient, IOptionsMonitor<XivApiOptions> settings)
         {
             _httpClient = httpClient;
             _httpClient.BaseAddress = new Uri(settings.CurrentValue.Url);

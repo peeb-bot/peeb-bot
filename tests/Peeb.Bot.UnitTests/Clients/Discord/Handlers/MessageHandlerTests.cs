@@ -12,8 +12,8 @@ using Peeb.Bot.Clients.Discord;
 using Peeb.Bot.Clients.Discord.Caches;
 using Peeb.Bot.Clients.Discord.Handlers;
 using Peeb.Bot.Clients.Discord.Services;
+using Peeb.Bot.Options;
 using Peeb.Bot.Results.Ok;
-using Peeb.Bot.Settings;
 
 namespace Peeb.Bot.UnitTests.Clients.Discord.Handlers
 {
@@ -181,7 +181,8 @@ namespace Peeb.Bot.UnitTests.Clients.Discord.Handlers
         public IMessage Message { get; set; }
         public MessageHandler MessageHandler { get; set; }
         public MockSequence MessageReceivedSequence { get; set; }
-        public Mock<IOptionsMonitor<DiscordSettings>> OptionsMonitor { get; set; }
+        public DiscordOptions Options { get; set; }
+        public Mock<IOptionsMonitor<DiscordOptions>> OptionsMonitor { get; set; }
         public OkResult Result { get; set; }
         public Mock<IResultHandler> ResultHandler { get; set; }
         public SearchResult SearchResult { get; set; }
@@ -190,7 +191,6 @@ namespace Peeb.Bot.UnitTests.Clients.Discord.Handlers
         public Mock<IServiceScopeCache> ServiceScopeCache { get; set; }
         public Mock<IServiceScopeFactory> ServiceScopeFactory { get; set; }
         public Mock<IServiceProvider> ServiceScopeServiceProvider { get; set; }
-        public DiscordSettings Settings { get; set; }
 
         public MessageHandlerTestsContext()
         {
@@ -202,16 +202,16 @@ namespace Peeb.Bot.UnitTests.Clients.Discord.Handlers
             CommandService = new Mock<ICommandService>(MockBehavior.Strict);
             DiscordSocketClient = new Mock<IDiscordSocketClient>();
             MessageReceivedSequence = new MockSequence();
-            OptionsMonitor = new Mock<IOptionsMonitor<DiscordSettings>>();
+            Options = new DiscordOptions { Prefix = "?" };
+            OptionsMonitor = new Mock<IOptionsMonitor<DiscordOptions>>();
             Result = new OkResult("OK");
             ServiceProvider = new Mock<IServiceProvider>();
             ServiceScope = new Mock<IServiceScope>(MockBehavior.Strict);
             ServiceScopeCache = new Mock<IServiceScopeCache>();
             ServiceScopeFactory = new Mock<IServiceScopeFactory>(MockBehavior.Strict);
             ServiceScopeServiceProvider = new Mock<IServiceProvider>();
-            Settings = new DiscordSettings { Prefix = "?" };
 
-            OptionsMonitor.SetupGet(s => s.CurrentValue).Returns(Settings);
+            OptionsMonitor.SetupGet(s => s.CurrentValue).Returns(Options);
             ServiceProvider.Setup(p => p.GetService(typeof(IServiceScopeFactory))).Returns(ServiceScopeFactory.Object);
             ServiceScope.SetupGet(s => s.ServiceProvider).Returns(ServiceScopeServiceProvider.Object);
             ServiceScopeCache.Setup(c => c.Get()).Returns(ServiceScope.Object);

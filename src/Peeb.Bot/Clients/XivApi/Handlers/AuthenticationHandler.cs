@@ -3,15 +3,15 @@ using System.Threading;
 using System.Threading.Tasks;
 using Flurl;
 using Microsoft.Extensions.Options;
-using Peeb.Bot.Settings;
+using Peeb.Bot.Options;
 
 namespace Peeb.Bot.Clients.XivApi.Handlers
 {
     public class AuthenticationHandler : DelegatingHandler
     {
-        private readonly IOptionsMonitor<XivApiSettings> _settings;
+        private readonly IOptionsMonitor<XivApiOptions> _settings;
 
-        public AuthenticationHandler(IOptionsMonitor<XivApiSettings> settings)
+        public AuthenticationHandler(IOptionsMonitor<XivApiOptions> settings)
         {
             _settings = settings;
         }

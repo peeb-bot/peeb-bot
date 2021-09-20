@@ -1,6 +1,6 @@
-namespace Peeb.Bot.Settings
+namespace Peeb.Bot.Options
 {
-    public class XivApiSettings
+    public class XivApiOptions
     {
         public string Url { get; set; }
         public string Token { get; set; }

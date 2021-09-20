@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Peeb.Bot.Clients.Discord.Caches;
 using Peeb.Bot.Clients.Discord.Services;
-using Peeb.Bot.Settings;
+using Peeb.Bot.Options;
 
 namespace Peeb.Bot.Clients.Discord.Handlers
 {
@@ -18,20 +18,20 @@ namespace Peeb.Bot.Clients.Discord.Handlers
 
         private readonly ICommandService _commandService;
         private readonly IDiscordSocketClient _discordSocketClient;
-        private readonly IOptionsMonitor<DiscordSettings> _settings;
+        private readonly IOptionsMonitor<DiscordOptions> _options;
         private readonly IServiceProvider _serviceProvider;
         private readonly IServiceScopeCache _serviceScopeCache;
 
         public MessageHandler(
             ICommandService commandService,
             IDiscordSocketClient discordSocketClient,
-            IOptionsMonitor<DiscordSettings> settings,
+            IOptionsMonitor<DiscordOptions> options,
             IServiceProvider serviceProvider,
             IServiceScopeCache serviceScopeCache)
         {
             _commandService = commandService;
             _discordSocketClient = discordSocketClient;
-            _settings = settings;
+            _options = options;
             _serviceProvider = serviceProvider;
             _serviceScopeCache = serviceScopeCache;
         }
@@ -50,7 +50,7 @@ namespace Peeb.Bot.Clients.Discord.Handlers
 
             var argPos = 0;
 
-            if (!userMessage.HasStringPrefix(_settings.CurrentValue.Prefix, ref argPos))
+            if (!userMessage.HasStringPrefix(_options.CurrentValue.Prefix, ref argPos))
             {
                 return;
             }

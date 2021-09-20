@@ -8,7 +8,7 @@ using Moq;
 using Moq.Protected;
 using NUnit.Framework;
 using Peeb.Bot.Clients.XivApi.Handlers;
-using Peeb.Bot.Settings;
+using Peeb.Bot.Options;
 
 namespace Peeb.Bot.UnitTests.Clients.XivApi.Handlers
 {
@@ -36,15 +36,15 @@ namespace Peeb.Bot.UnitTests.Clients.XivApi.Handlers
         public AuthenticationHandler Handler { get; set; }
         public HttpClient HttpClient { get; set; }
         public Mock<HttpMessageHandler> HttpMessageHandler { get; set; }
-        public Mock<IOptionsMonitor<XivApiSettings>> OptionsMonitor { get; set; }
-        public XivApiSettings Settings { get; set; }
+        public Mock<IOptionsMonitor<XivApiOptions>> OptionsMonitor { get; set; }
+        public XivApiOptions Settings { get; set; }
 
         public AuthenticationHandlerTestsContext()
         {
-            OptionsMonitor = new Mock<IOptionsMonitor<XivApiSettings>>();
+            OptionsMonitor = new Mock<IOptionsMonitor<XivApiOptions>>();
             HttpMessageHandler = new Mock<HttpMessageHandler>();
             Handler = new AuthenticationHandler(OptionsMonitor.Object) { InnerHandler = HttpMessageHandler.Object };
-            Settings = new XivApiSettings { Token = "Secret" };
+            Settings = new XivApiOptions { Token = "Secret" };
 
             HttpMessageHandler
                 .Protected()
