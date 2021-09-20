@@ -5,9 +5,9 @@ using FluentAssertions;
 using MediatR;
 using Moq;
 using NUnit.Framework;
-using Peeb.Bot.Commands.SaveCharacter;
 using Peeb.Bot.Dtos;
 using Peeb.Bot.Modules;
+using Peeb.Bot.Pipeline.Commands.SaveCharacter;
 using Peeb.Bot.Results.Character;
 
 namespace Peeb.Bot.UnitTests.Modules

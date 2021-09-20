@@ -5,6 +5,7 @@ using Peeb.Bot.Clients.Discord;
 using Peeb.Bot.Clients.Discord.Caches;
 using Peeb.Bot.Clients.Discord.Handlers;
 using Peeb.Bot.Clients.Discord.Services;
+using Peeb.Bot.Handlers;
 using Peeb.Bot.Options;
 using Peeb.Bot.Results.Character;
 using Peeb.Bot.Results.Execute;

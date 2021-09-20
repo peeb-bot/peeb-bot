@@ -6,8 +6,8 @@ using Moq;
 using NUnit.Framework;
 using Peeb.Bot.Dtos;
 using Peeb.Bot.Helpers;
-using Peeb.Bot.Notifications.NicknameChanged;
-using Peeb.Bot.Notifications.RoleAdded;
+using Peeb.Bot.Pipeline.Notifications.NicknameChanged;
+using Peeb.Bot.Pipeline.Notifications.RoleAdded;
 using Peeb.Bot.Results.Character;
 using Peeb.Bot.Services;
 

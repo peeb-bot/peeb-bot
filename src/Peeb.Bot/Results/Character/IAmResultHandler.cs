@@ -4,8 +4,8 @@ using Discord;
 using Discord.Commands;
 using Peeb.Bot.Clients.Discord.Handlers;
 using Peeb.Bot.Helpers;
-using Peeb.Bot.Notifications.NicknameChanged;
-using Peeb.Bot.Notifications.RoleAdded;
+using Peeb.Bot.Pipeline.Notifications.NicknameChanged;
+using Peeb.Bot.Pipeline.Notifications.RoleAdded;
 using Peeb.Bot.Services;
 
 namespace Peeb.Bot.Results.Character

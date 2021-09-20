@@ -7,8 +7,8 @@ using FluentAssertions;
 using MediatR;
 using Moq;
 using NUnit.Framework;
-using Peeb.Bot.Commands.Ping;
 using Peeb.Bot.Modules;
+using Peeb.Bot.Pipeline.Commands.Ping;
 using Peeb.Bot.Results.Ok;
 
 namespace Peeb.Bot.UnitTests.Modules

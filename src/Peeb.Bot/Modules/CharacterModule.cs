@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using Discord.Commands;
 using MediatR;
-using Peeb.Bot.Commands.SaveCharacter;
+using Peeb.Bot.Pipeline.Commands.SaveCharacter;
 using Peeb.Bot.Results.Character;
 using Peeb.Bot.Results.Unsuccessful;
 

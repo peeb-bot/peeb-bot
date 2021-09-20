@@ -1,5 +1,5 @@
 using System;
-using Peeb.Bot.Notifications.CharacterSaved;
+using Peeb.Bot.Pipeline.Notifications.CharacterSaved;
 
 namespace Peeb.Bot.Models
 {

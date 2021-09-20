@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using Discord.Commands;
 using MediatR;
-using Peeb.Bot.Commands.Ping;
+using Peeb.Bot.Pipeline.Commands.Ping;
 using Peeb.Bot.Results.Ok;
 
 namespace Peeb.Bot.Modules
