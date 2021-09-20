@@ -2,9 +2,8 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Peeb.Bot.Data;
-using Peeb.Bot.Options;
+using Peeb.Bot.Extensions;
 
 namespace Peeb.Bot.Startup
 {
@@ -15,16 +14,14 @@ namespace Peeb.Bot.Startup
             void OptionsAction(IServiceProvider p, DbContextOptionsBuilder o)
             {
                 var connectionString = configuration.GetConnectionString("Peeb");
-                var options = p.GetRequiredService<IOptionsMonitor<DatabaseOptions>>();
-                var databaseName = options.CurrentValue.Name;
+                var databaseName = configuration.GetDatabaseName("Peeb");
 
                 o.UseCosmos(connectionString, databaseName);
             }
 
             return services
                 .AddDbContextFactory<PeebDbContext>(OptionsAction)
-                .AddDbContext<PeebDbContext>(OptionsAction)
-                .Configure<DatabaseOptions>(configuration.GetSection("Database"));
+                .AddDbContext<PeebDbContext>(OptionsAction);
         }
     }
 }
